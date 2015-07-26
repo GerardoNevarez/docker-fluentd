@@ -10,16 +10,32 @@ RUN apk update && apk add go go-tools git && \
 COPY runfluentd /usr/local/bin/runfluentd
 ENV FLUENTD_VERSION=0.12.14, JEMALLOC_PATH=/usr/lib/libjemalloc.so, FLUENTD_CONF="fluent.conf"
 
-RUN apk update && apk add build-base ruby ruby-dev jemalloc-dev && \
+RUN apk update && apk add build-base ruby ruby-dev jemalloc-dev geoip geoip-dev geoip-doc  && \
   echo 'gem: --no-document' >> /etc/gemrc && \
   gem update --system && \
   gem install fluentd -v $FLUENTD_VERSION && \
+  # Native build plugins
+  fluent-gem install fluent-plugin-graphite && \
+  fluent-gem install fluent-plugin-geoip && \
+  #
   fluentd --setup /etc/fluent && \
   mkdir /var/run/fluentd && \
   chmod 755 /usr/local/bin/runfluentd && \
   ulimit -n 65536 && \
   apk del build-base geoip-dev && \
   rm -rf /var/cache/apk/*
+
+RUN fluent-gem install fluent-plugin-elasticsearch && \
+  fluent-gem install fluent-plugin-record-reformer && \
+  fluent-gem install fluent-plugin-docker-format && \
+  fluent-gem install fluent-plugin-grok_pure-parser && \
+  fluent-gem install fluent-plugin-secure-forward && \ 
+  fluent-gem install fluent-plugin-extract_query_params && \
+  fluent-gem install fluent-plugin-grep && \
+  fluent-gem install fluent-plugin-anonymizer && \
+  fluent-gem install fluent-plugin-add && \
+  fluent-gem install fluent-plugin-burrow && \
+  fluent-gem install fluent-plugin-conditional_filter
     
 EXPOSE 24224
 
