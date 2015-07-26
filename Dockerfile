@@ -1,19 +1,32 @@
-FROM gliderlabs/alpine:3.2
+FROM alpine:latest
 
-ENV FLUENTD_VERSION 0.12.14
-ENV JEMALLOC_PATH /usr/lib/libjemalloc.so
+RUN apk update && apk upgrade && apk add curl wget bash ca-certificates  && rm -rf /var/cache/apk/*
 
 COPY runfluentd /usr/local/bin/runfluentd
+ENV FLUENTD_VERSION=0.12.14, JEMALLOC_PATH=/usr/lib/libjemalloc.so, FLUENTD_CONF="fluent.conf"
 
-RUN apk-install ca-certificates ruby-dev build-base jemalloc-dev && \
+RUN apk update && apk add build-base ruby ruby-dev jemalloc-dev && \
   echo 'gem: --no-document' >> /etc/gemrc && \
   gem update --system && \
   gem install fluentd -v $FLUENTD_VERSION && \
-  fluent-gem install fluent-plugin-td && \
   fluentd --setup /etc/fluent && \
   mkdir /var/run/fluentd && \
   chmod 755 /usr/local/bin/runfluentd && \
-  ulimit -n 65536
+  ulimit -n 65536 && \
+  apk del build-base geoip-dev && \
+  rm -rf /var/cache/apk/*
+    
+EXPOSE 24224
 
+# for log storage (maybe shared with host)
+RUN mkdir -p /fluentd/log
+# configuration/plugins path (default: copied from .)
+RUN mkdir -p /fluentd/etc
+RUN mkdir -p /fluentd/plugins
+COPY fluent.conf /fluentd/etc/fluent.conf
 
-ENTRYPOINT ["/usr/local/bin/runfluentd"]
+VOLUME ["/fluentd"]
+ONBUILD COPY fluent.conf /fluentd/etc/
+ONBUILD COPY plugins/ /fluentd/plugins/
+
+CMD ["/usr/local/bin/runfluentd","start"]

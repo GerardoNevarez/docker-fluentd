@@ -13,7 +13,7 @@ start() {
   # see http://docs.fluentd.org/en/articles/before-install
   ulimit -n 65536
   echo -n "Starting $name: "
-  exec $prog
+  exec $prog -c /fluentd/etc/$FLUENTD_CONF -p /fluentd/plugins
   RETVAL=$?
   echo
 }
@@ -34,7 +34,7 @@ stop() {
 }
 
 configtest() {
-  $name --dry-run -q
+  $name --dry-run -q -c /fluentd/etc/$FLUENTD_CONF -p /fluentd/plugins
 }
 
 case "$1" in
