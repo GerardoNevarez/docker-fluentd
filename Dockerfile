@@ -35,7 +35,8 @@ RUN fluent-gem install fluent-plugin-elasticsearch && \
   fluent-gem install fluent-plugin-anonymizer && \
   fluent-gem install fluent-plugin-add && \
   fluent-gem install fluent-plugin-burrow && \
-  fluent-gem install fluent-plugin-conditional_filter
+  fluent-gem install fluent-plugin-conditional_filter && \
+  fluent-gem install fluent-plugin-docker_metadata_filter
     
 EXPOSE 24224
 
