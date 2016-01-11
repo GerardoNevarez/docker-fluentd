@@ -2,11 +2,6 @@ FROM alpine:latest
 
 RUN apk update && apk upgrade && apk add curl wget bash ca-certificates  && rm -rf /var/cache/apk/*
 
-RUN apk update && apk add go go-tools git && \
-  mkdir /git && cd /git && git clone https://github.com/elastic/logstash-forwarder.git && \
-  cd /git/logstash-forwarder && go build -o logstash-forwarder && cp logstash-forwarder /usr/local/bin && \
-  cd / && rm -rf /git && apk del go go-tools git &&  rm -rf /var/cache/apk/* && ls -l /usr/local/bin/logstash-forwarder
-
 COPY runfluentd /usr/local/bin/runfluentd
 ENV FLUENTD_VERSION=0.12.19, JEMALLOC_PATH=/usr/lib/libjemalloc.so, FLUENTD_CONF="fluent.conf"
 
