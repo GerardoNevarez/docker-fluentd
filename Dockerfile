@@ -8,7 +8,7 @@ RUN apk update && apk add go go-tools git && \
   cd / && rm -rf /git && apk del go go-tools git &&  rm -rf /var/cache/apk/* && ls -l /usr/local/bin/logstash-forwarder
 
 COPY runfluentd /usr/local/bin/runfluentd
-ENV FLUENTD_VERSION=0.12.16, JEMALLOC_PATH=/usr/lib/libjemalloc.so, FLUENTD_CONF="fluent.conf"
+ENV FLUENTD_VERSION=0.12.19, JEMALLOC_PATH=/usr/lib/libjemalloc.so, FLUENTD_CONF="fluent.conf"
 
 RUN apk update && apk add build-base ruby ruby-dev jemalloc-dev geoip geoip-dev geoip-doc  && \
   echo 'gem: --no-document' >> /etc/gemrc && \
